@@ -66,10 +66,16 @@
           >
             下级
           </el-button>
-          <el-button size="small" v-if="scope.row.pid === '-1'" @click="testFlow">
+          <el-button size="small" v-if="scope.row.pid === '-1'" @click="testFlow(scope.row.id)">
             测试流量
           </el-button>
-          <el-button size="small" v-if="scope.row.serviceType === 'web'"> 查看日志 </el-button>
+          <el-button
+            size="small"
+            v-if="scope.row.serviceType === 'web'"
+            @click="viewLog(scope.row)"
+          >
+            查看日志
+          </el-button>
           <el-button size="small" @click="editServer(scope.row)"> 修改 </el-button>
           <el-button size="small" @click="modifyCondition(scope.row)"> 修改条件 </el-button>
           <el-button size="small" @click="refreshServerModalTip(scope.row)"> 刷新 </el-button>
@@ -150,14 +156,30 @@
     v-model:attrs="tipModal.attrs"
     v-model:width="tipModal.width"
     v-model:loading="tipModal.loading"
+    v-model:top="tipModal.top"
     @cancelModal="cancelTipModal"
     @sureModal="sureTipModal"
   >
-    <div class="net-box" v-if="tipModal.type === 4">
-      <span>服务名:</span>
-      <el-input v-model="netLink" style="width: 100%" placeholder="请输入服务名" size="large" />
-    </div>
+    <template v-slot:default>
+      <div class="net-box" v-if="tipModal.type === 4">
+        <span>服务名:</span>
+        <el-input v-model="netLink" style="width: 100%" placeholder="请输入服务名" size="large" />
+      </div>
+      <div class="net-box" v-if="tipModal.type === 5">
+        <el-input
+          v-model="viewLogText"
+          style="width: 100%"
+          :rows="20"
+          type="textarea"
+          placeholder=" "
+        />
+      </div>
+    </template>
+    <!-- <template v-slot:footer>
+      <el-button type="primary" @click="cancelTipModal"> 关闭</el-button>
+    </template> -->
   </TipModal>
+  <TestFlow ref="testFlowRef" @testFlow="testFlow"></TestFlow>
 </template>
 
 <script lang="ts" setup>
@@ -166,15 +188,18 @@ import AddServer from "./components/AddServer/index.vue"
 import ModifyCondition from "./components/ModifyCondition/index.vue"
 import Command from "./components/Command/index.vue"
 import HistoryRecord from "./components/HistoryRecord/index.vue"
+import TestFlow from "./components/TestFlow/index.vue"
 import { organizeData, tableTransComputed } from "./hooks"
 import {
   bindServer,
   deleteServer,
   getServiceById,
   getTreeData,
+  getViewLog,
   onOffServer,
   refreshServer,
   serviceCondition,
+  testFlowData,
   testNetStatus,
   updateServer
 } from "@/api/monitor/tsServices"
@@ -234,8 +259,28 @@ const editServer = async (row: tableDataType) => {
 /**
  * @description 测试流量
  */
-const testFlow = () => {
+const testFlowRef = ref<InstanceType<typeof TestFlow>>()
+const testFlow = async (id: string, dataNumber?: number) => {
   testFlowModal.value = true
+  const result = await testFlowData({ serviceId: id, page: 1, limit: 10, dataNumber })
+  testFlowRef.value?.setTableData(result.data.list, id)
+}
+/**
+ * @description 查看日志
+ */
+let viewLogText = ref<string>("")
+const viewLog = async (row: tableDataType) => {
+  currentRow.value = row
+  tipModal.showModal = true
+  tipModal.width = "800"
+  tipModal.top = "10vh"
+  tipModal.title = "查看日志"
+  tipModal.type = 5
+  viewLogText.value = ""
+  const result = await getViewLog({ serviceId: row.id })
+  if (result.data) {
+    viewLogText.value = result.data
+  }
 }
 /**
  * @description 修改条件

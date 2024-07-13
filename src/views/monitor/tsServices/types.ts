@@ -31,5 +31,6 @@ export const enum ITipType {
   ONOFF,
   BIND,
   TESTNET,
+  ViewLog,
   Other
 }

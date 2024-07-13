@@ -24,6 +24,17 @@ const router = createRouter({
               component: () => import("@/views/monitor/quartzJob/index.vue")
             }
           ]
+        },
+        {
+          path: "system",
+          component: { render: () => h(resolveComponent("router-view")) },
+          children: [
+            {
+              path: "user",
+              name: "user",
+              component: () => import("@/views/system/user/index.vue")
+            }
+          ]
         }
       ],
       meta: {
@@ -41,6 +52,7 @@ const router = createRouter({
 })
 // 路由守卫
 router.beforeEach((to, from, next) => {
+  console.log(to, from, "to, from")
   // 开始进度条
   NProgress.start()
   next()

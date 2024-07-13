@@ -8,14 +8,16 @@
       draggable
       @close="cancel"
     >
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="cancel">取消</el-button>
-          <el-button color="#009688" @click="sure" :loading="props.loading"> 确认 </el-button>
-        </div>
-      </template>
-      <slot>
+      <slot name="default">
         <span class="tip-class">{{ props.context }}</span>
+      </slot>
+      <slot name="footer">
+        <slot name="footer-btn">
+          <div class="dialog-footer">
+            <el-button @click="cancel">取消</el-button>
+            <el-button color="#009688" @click="sure" :loading="props.loading"> 确认 </el-button>
+          </div>
+        </slot>
       </slot>
     </el-dialog>
   </div>

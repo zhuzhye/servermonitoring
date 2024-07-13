@@ -1,4 +1,5 @@
 import type { tableDataType } from "@/views/monitor/tsServices/types"
+import type { tableCondition } from "env"
 
 export interface tableList {
   data: {
@@ -16,4 +17,8 @@ export interface ICommandData {
   offCommond: string
   rebootCommond: string
   turnCommond: string
+}
+export interface ITestFlow extends tableCondition {
+  serviceId: string
+  dataNumber?: number | ""
 }

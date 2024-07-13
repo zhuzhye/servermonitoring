@@ -1,5 +1,5 @@
 import { http } from "@/utils/http/axios"
-import type { ICommandType, tableList } from "./types"
+import type { ICommandType, ITestFlow, tableList } from "./types"
 import { transFromData } from "@/utils/http/axios/utils"
 import { ContentTypeEnum } from "@/utils/http/axios/httpEnum"
 import type { ITableQueryParams } from "@/views/monitor/tsServices/components/HistoryRecord/types"
@@ -215,6 +215,35 @@ export const testNetStatus = (params: { id: string; link: string }) => {
     {
       isShowSuccessMessage: true,
       isShowErrorMessage: true
+    }
+  )
+}
+
+//测试流量
+export const testFlowData = (params: ITestFlow) => {
+  return http.request(
+    {
+      url: "/service/testFlow",
+      method: "GET",
+      params
+    },
+    {
+      isShowSuccessMessage: true,
+      isShowErrorMessage: true
+    }
+  )
+}
+
+//查看日志
+export const getViewLog = (params: { serviceId: string }) => {
+  return http.request(
+    {
+      url: "/service/lookLog",
+      method: "GET",
+      params
+    },
+    {
+      isReturnNativeResponse: true
     }
   )
 }

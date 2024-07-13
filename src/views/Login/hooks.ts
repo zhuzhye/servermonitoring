@@ -1,5 +1,6 @@
-import { getUserLogin } from "@/api/Login/login"
-import { ElMessage } from "element-plus"
+import { getUserInfo, getUserLogin } from "@/api/Login/login"
+import loginStore from "@/stores/Login/login"
+
 import { nextTick, ref } from "vue"
 import type { Ref } from "vue"
 import { useRouter } from "vue-router"
@@ -31,27 +32,24 @@ export const getDDImage = (ddurl: Ref<string>, appid: Ref<string>) => {
       },
       async (loginResult) => {
         spinning.value = true
-        console.log("xxxxx")
         // 这里可以直接进行重定向
         const { authCode, callback } = loginResult
 
         console.log(callback, "callback")
+        const useLoginStore = loginStore()
         const result = await getUserLogin({ authCode })
         if (result.code === 200 && result.data.token) {
           sessionStorage.setItem("token", result.data.token)
-          vueRouter.push("/tsServices")
-          ElMessage({
-            message: "登录成功",
-            type: "success"
-          })
+          useLoginStore.setToken(result.data.token)
+          vueRouter.push("/monitor/tsServices")
           window.removeEventListener("message", callback)
         } else {
-          ElMessage({
-            message: "登录失败",
-            type: "error"
-          })
           vueRouter.push("/login")
           window.location.reload()
+        }
+        const infoResult = await getUserInfo()
+        if (infoResult.data) {
+          useLoginStore.setUserInfo(infoResult.data)
         }
         spinning.value = false
       },

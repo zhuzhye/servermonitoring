@@ -1,5 +1,5 @@
-import type { AxiosRequestConfig } from 'axios'
-import { AxiosTransform } from './axiosTransform'
+import type { AxiosRequestConfig } from "axios"
+import { AxiosTransform } from "./axiosTransform"
 
 export interface CreateAxiosOptions extends AxiosRequestConfig {
   transform?: AxiosTransform
@@ -44,7 +44,7 @@ export interface RequestOptions {
   // 请求拼接路径
   urlPrefix?: string
   // 错误消息提示类型
-  errorMessageMode?: 'none' | 'modal'
+  errorMessageMode?: "none" | "modal"
   // 是否添加时间戳
   joinTime?: boolean
   // 不进行任何处理，直接返回
@@ -59,7 +59,8 @@ export interface RequestOptions {
 
 export interface Result<T = any> {
   code: number
-  type?: 'success' | 'error' | 'warning'
+  type?: "success" | "error" | "warning"
   message: string
+  msg?: string
   result?: T
 }

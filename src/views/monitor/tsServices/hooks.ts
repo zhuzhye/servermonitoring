@@ -11,9 +11,10 @@ export function organizeData(data: tableDataType[]): tableDataType[] {
   data.forEach((item) => {
     map[item.id] = { ...item }
   })
+  console.log(map, "map")
   // 构建树结构
   data.forEach((item) => {
-    if (item.pid === "-1") {
+    if (item.pid === "-1" || !item.pid || item.pid === "undefined") {
       // 如果pid为-1，则表示这是顶级节点，添加到结果中
       result.push(map[item.id])
     } else {

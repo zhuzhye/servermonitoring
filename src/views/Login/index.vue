@@ -19,14 +19,11 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
-import { getDDImage, getQueryParam } from "./hooks"
-import { useRouter } from "vue-router"
+import { getDDImage,  } from "./hooks"
 import Motion from "./utils/motion"
-import { getUserLogin } from "@/api/Login/login"
-const vueRouter = useRouter()
+
 const appid = ref("dingnxsxidanep0b3uwx")
 const ddurl = ref(window.location.origin + "/#/login")
-const authCode = getQueryParam("authCode")
 let imageSpinning = ref(false)
 onMounted(async () => {
   let { spinning } = getDDImage(ddurl, appid)

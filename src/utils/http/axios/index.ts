@@ -38,7 +38,6 @@ const transform: AxiosTransform = {
       isTransformResponse,
       isReturnNativeResponse
     } = options
-
     // 是否返回原生响应头 比如：需要获取响应头时使用该属性
     if (isReturnNativeResponse) {
       return res
@@ -58,7 +57,7 @@ const transform: AxiosTransform = {
       throw new Error("请求出错，请稍候重试")
     }
     //  这里 code，result，message为 后台统一的字段，需要修改为项目自己的接口返回格式
-    const { code, message } = data
+    const { code, msg: message } = data
     // 请求成功
     const hasSuccess = data && Reflect.has(data, "code") && code === ResultEnum.SUCCESS
     // 是否显示提示信息
@@ -176,8 +175,7 @@ const transform: AxiosTransform = {
     const $message = ElMessage
     const { response, code, message } = error || {}
     // TODO 此处要根据后端接口返回格式修改
-    const msg: string =
-      response && response.data && response.data.message ? response.data.message : ""
+    const msg: string = response && response.data && response.data.msg ? response.data.msg : ""
     const err: string = error.toString()
     try {
       if (code === "ECONNABORTED" && message.indexOf("timeout") !== -1) {

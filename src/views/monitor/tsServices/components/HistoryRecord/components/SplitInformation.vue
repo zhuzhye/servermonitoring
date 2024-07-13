@@ -1,19 +1,53 @@
 <template>
   <div class="addserver-dialog">
-    <el-dialog v-model="testFlowModal" title="测试流量" width="100%" top="5vh" draggable>
+    <el-dialog
+      v-model="historySplitModal"
+      title="分盘详情"
+      width="100%"
+      top="11vh"
+      @close="closeModal"
+    >
       <template #footer>
         <div class="dialog-footer">
-          <el-button color="#009688"> 关闭 </el-button>
+          <el-button color="#009688" @click="closeModal"> 关闭 </el-button>
         </div>
       </template>
+
+      <el-table
+        style="width: 100%"
+        row-key="id"
+        :tree-props="{ children: 'children' }"
+        :default-sort="{ prop: 'sort', order: '' }"
+        default-expand-all
+        border
+        :data="tableData"
+      >
+        <el-table-column label="分盘大小" prop="fileSystem" />
+        <el-table-column label="总容量" prop="total" />
+        <el-table-column label="已使用容量" prop="used" />
+      </el-table>
     </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import tsServicesStore from "@/stores/monitor/tsServices"
 import { storeToRefs } from "pinia"
+import { ref } from "vue"
+import type { IDisk } from "../types"
 const useTsServicesStore = tsServicesStore()
-const { testFlowModal } = storeToRefs(useTsServicesStore)
+const { historySplitModal } = storeToRefs(useTsServicesStore)
+let tableData = ref<IDisk[]>()
+const setTableData = (Disk: IDisk[]) => {
+  tableData.value = Disk
+}
+/**
+ * @description: 关闭弹窗
+ */
+const closeModal = () => {
+  tableData.value = []
+  historySplitModal.value = false
+}
+defineExpose({ setTableData })
 </script>
 <style lang="scss" scoped>
 .addserver-dialog {

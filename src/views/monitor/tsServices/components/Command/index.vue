@@ -1,43 +1,102 @@
 <template>
   <div class="addserver-dialog">
-    <el-dialog v-model="dialogVisible" title="命令列表" width="700" top="10vh">
+    <el-dialog v-model="commandModal" title="命令列表" width="700" top="10vh" draggable>
       <template #footer>
         <div class="dialog-footer">
-          <el-button>取消</el-button>
-          <el-button color="#009688"> 保存 </el-button>
+          <el-button
+            @click="
+              () => {
+                commandModal = false
+                formRef?.resetFields()
+              }
+            "
+            >取消</el-button
+          >
+          <el-button color="#009688" @click="verifyFormSubmit"> 保存 </el-button>
         </div>
       </template>
-      <el-form :model="form" label-width="auto" class="form-dialog">
-        <el-form-item label="开启">
-          <el-input v-model="form.name" size="large" />
+      <el-form
+        :model="formData"
+        :rules="rules"
+        ref="formRef"
+        label-width="auto"
+        class="form-dialog"
+      >
+        <el-form-item label="开启" prop="offCommond">
+          <el-input v-model="formData.offCommond" size="large" />
         </el-form-item>
-        <el-form-item label="关闭">
-          <el-input v-model="form.name" size="large" />
+        <el-form-item label="关闭" prop="rebootCommond">
+          <el-input v-model="formData.rebootCommond" size="large" />
         </el-form-item>
-        <el-form-item label="重启">
-          <el-input v-model="form.name" size="large" />
+        <el-form-item label="重启" prop="turnCommond">
+          <el-input v-model="formData.turnCommond" size="large" />
         </el-form-item>
       </el-form>
     </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue"
-import { reactive } from "vue"
+import loginStore from "@/stores/Login/login"
+import tsServicesStore from "@/stores/monitor/tsServices"
+import { storeToRefs } from "pinia"
+import { reactive, ref } from "vue"
+import type { ICommand } from "./types"
+import type { FormInstance } from "element-plus"
+import type { FormRules } from "element-plus/lib"
+import { arrangement, getCommond } from "@/api/monitor/tsServices"
+//状态store
+const useTsServicesStore = tsServicesStore()
+const useLoginStore = loginStore()
+const loginStoreList = storeToRefs(useLoginStore)
+const { commandModal } = storeToRefs(useTsServicesStore)
 
-// do not use same name with ref
-const form = reactive({
-  name: "",
-  region: "",
-  date1: "",
-  date2: "",
-  delivery: false,
-  type: [],
-  resource: "",
-  desc: ""
+//表单实例
+const formRef = ref<FormInstance>()
+
+//表单数据
+let formData = reactive<ICommand>({
+  id: "",
+  offCommond: "",
+  rebootCommond: "",
+  turnCommond: ""
 })
 
-const dialogVisible = ref(false)
+//规则校验
+const rules = reactive<FormRules<ICommand>>({
+  offCommond: [{ required: true, message: "该选项必填", trigger: "blur" }],
+  rebootCommond: [{ required: true, message: "该选项必填", trigger: "blur" }],
+  turnCommond: [{ required: true, message: "该选项必填", trigger: "blur" }]
+})
+
+/**
+ * @description 校验保存
+ */
+const verifyFormSubmit = async () => {
+  if (!formRef.value) return
+  await formRef.value.validate(async (valid) => {
+    if (valid) {
+      formData.user = loginStoreList.userInfo.value.username
+      await arrangement<ICommand>(formData)
+      if (formRef.value) {
+        formRef.value.resetFields()
+      }
+      commandModal.value = false
+    }
+  })
+}
+/**
+ * @param {string} id 列表id
+ * @description 获取命令列表
+ */
+const getCommondInfo = async (id: string) => {
+  formData.id = id
+  const result = await getCommond<{ id: string }>({ id })
+  if (result.data) {
+    formData = Object.assign(formData, result.data)
+  }
+}
+//导出方法
+defineExpose({ getCommondInfo })
 </script>
 <style lang="scss" scoped>
 .addserver-dialog {

@@ -1,4 +1,4 @@
-import { isObject } from '../../is'
+import { isObject } from "../../is"
 
 export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
   let key: string
@@ -26,16 +26,24 @@ export function isUrl(url: string) {
  *  ==>www.baidu.com?a=3&b=4
  */
 export function setObjToUrlParams(baseUrl: string, obj: Record<string, any>): string {
-  let parameters = ''
-  let url = ''
+  let parameters = ""
+  let url = ""
   for (const key in obj) {
-    parameters += key + '=' + encodeURIComponent(obj[key]) + '&'
+    parameters += key + "=" + encodeURIComponent(obj[key]) + "&"
   }
-  parameters = parameters.replace(/&$/, '')
+  parameters = parameters.replace(/&$/, "")
   if (/\?$/.test(baseUrl)) {
     url = baseUrl + parameters
   } else {
-    url = baseUrl.replace(/\/?$/, '?') + parameters
+    url = baseUrl.replace(/\/?$/, "?") + parameters
   }
   return url
+}
+
+export const transFromData = <T extends Record<string, any>>(dataList: T) => {
+  let data = new FormData()
+  for (let key in dataList) {
+    data.append(key, dataList[key])
+  }
+  return data
 }

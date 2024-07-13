@@ -14,3 +14,22 @@ export interface tableDataType {
   netStatus?: string
   children?: tableDataType[]
 }
+
+export interface ITipModal {
+  title: string
+  showModal: boolean
+  width?: string
+  top?: string
+  context?: string
+  type?: ITipType
+  attrs?: Record<string, any>
+  loading?: boolean
+}
+export const enum ITipType {
+  DELETE,
+  REFRESH,
+  ONOFF,
+  BIND,
+  TESTNET,
+  Other
+}

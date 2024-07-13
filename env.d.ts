@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
-declare module '*.vue' {
-  import { DefineComponent } from 'vue'
+declare module "*.vue" {
+  import { DefineComponent } from "vue"
   const component: DefineComponent
   export default component
 }
@@ -13,4 +13,8 @@ export interface GlobConfig {
   urlPrefix?: string
   uploadUrl?: string
   imgUrl?: string
+}
+export interface tableCondition {
+  page: number
+  limit: number
 }
